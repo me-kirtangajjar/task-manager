@@ -29,6 +29,36 @@ app.get("/tasks/:id", (req, res) => {
     .send({ msg: "Task details fetched successfully", data: taskById });
 });
 
+app.post("/tasks", (req, res) => {
+  const { title, description, completed } = req.body;
+
+  if (Object.keys(req.body).length !== 3) {
+    return res.status(400).send({
+      msg: "Invalid request body: properties required - title, description, completed",
+    });
+  }
+
+  if (
+    title.length === 0 ||
+    description.length === 0 ||
+    typeof completed !== "boolean"
+  ) {
+    return res.status(400).send({ msg: "Invalid request body" });
+  }
+
+  const newTask = {
+    id: allTasks.length + 1,
+    title,
+    description,
+    completed,
+  };
+
+  allTasks.push(newTask);
+  return res
+    .status(201)
+    .send({ msg: "Task created successfully", data: newTask });
+});
+
 app.listen(process.env.PORT || 3000, (err) => {
   if (err) {
     return console.log("Something bad happened", err);
