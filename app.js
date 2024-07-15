@@ -7,9 +7,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Retrieve all tasks
 app.get("/tasks", (req, res) => {
-  return res
-    .status(200)
-    .send({ msg: "All task details fetched successfully", data: allTasks });
+  return res.status(200).send(allTasks);
 });
 
 // Retrieve a single task by its ID.
@@ -24,9 +22,7 @@ app.get("/tasks/:id", (req, res) => {
 
   if (!taskById) return res.status(404).send({ msg: "Task not found" });
 
-  return res
-    .status(200)
-    .send({ msg: "Task details fetched successfully", data: taskById });
+  return res.status(200).json(taskById);
 });
 
 app.post("/tasks", (req, res) => {
@@ -54,9 +50,7 @@ app.post("/tasks", (req, res) => {
   };
 
   allTasks.push(newTask);
-  return res
-    .status(201)
-    .send({ msg: "Task created successfully", data: newTask });
+  return res.status(201).send(newTask);
 });
 
 app.put("/tasks/:id", (req, res) => {
@@ -92,9 +86,7 @@ app.put("/tasks/:id", (req, res) => {
   allTasks[index].description = description;
   allTasks[index].completed = completed;
 
-  return res
-    .status(200)
-    .send({ msg: "Task details updated successfully", data: allTasks[index] });
+  return res.status(200).send(allTasks[index]);
 });
 
 app.delete("/tasks/:id", (req, res) => {
@@ -112,9 +104,7 @@ app.delete("/tasks/:id", (req, res) => {
   const index = allTasks.indexOf(taskById);
   allTasks.splice(index, 1);
 
-  return res
-    .status(200)
-    .send({ msg: "Task deleted successfully", data: taskById });
+  return res.status(200).send(taskById);
 });
 
 app.listen(process.env.PORT || 3000, (err) => {
