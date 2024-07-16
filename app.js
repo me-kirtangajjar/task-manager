@@ -25,18 +25,33 @@ app.get("/tasks/:id", (req, res) => {
   return res.status(200).json(taskById);
 });
 
-app.post("/tasks", (req, res) => {
-  const { title, description, completed } = req.body;
+app.get("/tasks/priority/:level", (req, res) => {
+  const level = req.params.level;
 
-  if (Object.keys(req.body).length !== 3) {
+  let priorityTasks = [];
+  for (let index = 0; index < allTasks.length; index++) {
+    if (allTasks[index].priority == level) {
+      priorityTasks.push(allTasks[index]);
+    }
+  }
+
+  return res.status(200).send(priorityTasks);
+});
+
+// Create a new task
+app.post("/tasks", (req, res) => {
+  const { title, description, priority, completed } = req.body;
+
+  if (Object.keys(req.body).length !== 4) {
     return res.status(400).send({
-      msg: "Invalid request body: properties required - title, description, completed",
+      msg: "Invalid request body: properties required - title, description, priority, completed",
     });
   }
 
   if (
     title.length === 0 ||
     description.length === 0 ||
+    priority.length === 0 ||
     typeof completed !== "boolean"
   ) {
     return res.status(400).send({ msg: "Invalid request body" });
@@ -46,6 +61,7 @@ app.post("/tasks", (req, res) => {
     id: allTasks.length + 1,
     title,
     description,
+    priority,
     completed,
   };
 
@@ -53,23 +69,25 @@ app.post("/tasks", (req, res) => {
   return res.status(201).send(newTask);
 });
 
+// Update an existing task by its ID
 app.put("/tasks/:id", (req, res) => {
   const id = parseInt(req.params.id);
-  const { title, description, completed } = req.body;
+  const { title, description, priority, completed } = req.body;
 
   if (isNaN(id)) {
     return res.status(400).send({ msg: "Invalid request" });
   }
 
-  if (Object.keys(req.body).length !== 3) {
+  if (Object.keys(req.body).length !== 4) {
     return res.status(400).send({
-      msg: "Invalid request body: properties required - title, description, completed",
+      msg: "Invalid request body: properties required - title, description, priority, completed",
     });
   }
 
   if (
     title.length === 0 ||
     description.length === 0 ||
+    priority.length === 0 ||
     typeof completed !== "boolean"
   ) {
     return res.status(400).send({ msg: "Invalid request body" });
@@ -84,11 +102,13 @@ app.put("/tasks/:id", (req, res) => {
 
   allTasks[index].title = title;
   allTasks[index].description = description;
+  allTasks[index].priority = priority;
   allTasks[index].completed = completed;
 
   return res.status(200).send(allTasks[index]);
 });
 
+// Delete a task by its ID
 app.delete("/tasks/:id", (req, res) => {
   const id = parseInt(req.params.id);
 
